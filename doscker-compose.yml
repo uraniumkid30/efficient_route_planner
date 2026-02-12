@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: fuel_router_web
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+      - maps_data:/app/maps
+      - static_volume:/app/static
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings
+      - REDIS_URL=redis://redis:6379/0
+      - DATA_DIR=/app/data
+      - MAP_DIR=/app/maps
+      - CACHE_BACKEND=redis
+    depends_on:
+      - redis
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn --bind 0.0.0.0:8000 config.wsgi:application"
+    networks:
+      - fuel_router_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: fuel_router_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - fuel_router_network
+    command: redis-server --appendonly yes
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: fuel_router_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - static_volume:/static
+      - maps_data:/maps
+    depends_on:
+      - web
+    networks:
+      - fuel_router_network
+
+volumes:
+  redis_data:
+  maps_data:
+  static_volume:
+
+networks:
+  fuel_router_network:
+    driver: bridge
