@@ -323,3 +323,6 @@ Nominatim for geocoding
 Folium for map visualization
 
 Made with Love for efficient road trips
+
+## References
+https://iestechnologies.com/latlon.php

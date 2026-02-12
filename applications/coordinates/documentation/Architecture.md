@@ -292,3 +292,6 @@ CoordinateParserFactory	Tool crib	Hands you the right tool for the job
 Remember: Each piece has one job, they don't step on each other's toes, and they communicate through clear interfaces. This makes adding new features (like Germany!) surprisingly simple.
 
 "Good architecture is like good furniture - you don't notice it when it's working well, but everything falls apart when it's not." - Anonymous
+
+## References
+https://iestechnologies.com/latlon.php
